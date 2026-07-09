@@ -1,0 +1,462 @@
+{
+    "meta":  {
+                 "saison":  "2026/27",
+                 "gueltigAb":  "",
+                 "stand":  "2026-07-03T12:06:44",
+                 "quelle":  "Entwurf_Hallen Plan_2026-27_CP (Excel-Import)"
+             },
+    "hallen":  [
+                   {
+                       "id":  "stadionhalle",
+                       "name":  "Stadionhalle",
+                       "standort":  "Stadionhalle"
+                   },
+                   {
+                       "id":  "lkh-kurpark",
+                       "name":  "LK Halle Kurpark",
+                       "standort":  "LK Halle Kurpark"
+                   },
+                   {
+                       "id":  "kath-gymn",
+                       "name":  "Kath. Gymnasium",
+                       "standort":  "Kath. Gymnasium"
+                   },
+                   {
+                       "id":  "liethenhalle",
+                       "name":  "Liethenhalle",
+                       "standort":  "Liethenhalle"
+                   },
+                   {
+                       "id":  "stormhalle",
+                       "name":  "Th.-Storm-Schule (große Sporthalle)",
+                       "standort":  "Th.-Storm-Schule (große Sporthalle)"
+                   },
+                   {
+                       "id":  "solidorhalle",
+                       "name":  "Solidorhalle / Staatl. Gymnasium",
+                       "standort":  "Solidorhalle / Staatl. Gymnasium"
+                   }
+               ],
+    "hallenbelegungen":  [
+                             {
+                                 "id":  "hb1",
+                                 "tag":  "Mo",
+                                 "halle":  "stadionhalle",
+                                 "start":  "15:00",
+                                 "ende":  "18:00",
+                                 "label":  "SCH TT Nachwuchs G Fromm TT Männer G Fromm",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb2",
+                                 "tag":  "Mo",
+                                 "halle":  "stadionhalle",
+                                 "start":  "18:00",
+                                 "ende":  "20:00",
+                                 "label":  "SG Medizin Frauen Breitensp.",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb3",
+                                 "tag":  "Mo",
+                                 "halle":  "stadionhalle",
+                                 "start":  "20:00",
+                                 "ende":  "22:30",
+                                 "label":  "FF HIG",
+                                 "kategorie":  "fremd",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb4",
+                                 "tag":  "Mo",
+                                 "halle":  "stadionhalle",
+                                 "start":  "09:00",
+                                 "ende":  "10:00",
+                                 "label":  "Kita Schwalben Nest",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb5",
+                                 "tag":  "Mo",
+                                 "halle":  "stadionhalle",
+                                 "start":  "13:00",
+                                 "ende":  "14:00",
+                                 "label":  "Volkssolida. HIG",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb6",
+                                 "tag":  "Di",
+                                 "halle":  "stadionhalle",
+                                 "start":  "15:30",
+                                 "ende":  "19:00",
+                                 "label":  "Budokan",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb7",
+                                 "tag":  "Di",
+                                 "halle":  "stadionhalle",
+                                 "start":  "19:00",
+                                 "ende":  "20:30",
+                                 "label":  "SCH ?? Volleyball R Träger",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb8",
+                                 "tag":  "Di",
+                                 "halle":  "stadionhalle",
+                                 "start":  "20:30",
+                                 "ende":  "22:30",
+                                 "label":  "in Klärung",
+                                 "kategorie":  "fremd",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb9",
+                                 "tag":  "Di",
+                                 "halle":  "stadionhalle",
+                                 "start":  "09:00",
+                                 "ende":  "12:00",
+                                 "label":  "SG Medizin Frauen Breitensp.",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb10",
+                                 "tag":  "Mi",
+                                 "halle":  "stadionhalle",
+                                 "start":  "15:30",
+                                 "ende":  "18:00",
+                                 "label":  "Rheuma liga Rheuma liga",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb11",
+                                 "tag":  "Mi",
+                                 "halle":  "stadionhalle",
+                                 "start":  "18:00",
+                                 "ende":  "20:00",
+                                 "label":  "TSV Aufbau",
+                                 "kategorie":  "tsv",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb12",
+                                 "tag":  "Mi",
+                                 "halle":  "stadionhalle",
+                                 "start":  "20:00",
+                                 "ende":  "22:30",
+                                 "label":  "Rengelrode Breitenspo TT HIG",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb13",
+                                 "tag":  "Mi",
+                                 "halle":  "stadionhalle",
+                                 "start":  "09:00",
+                                 "ende":  "10:00",
+                                 "label":  "Kita HIG",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb14",
+                                 "tag":  "Do",
+                                 "halle":  "stadionhalle",
+                                 "start":  "15:30",
+                                 "ende":  "19:00",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb15",
+                                 "tag":  "Do",
+                                 "halle":  "stadionhalle",
+                                 "start":  "19:00",
+                                 "ende":  "21:00",
+                                 "label":  "TSV Aufbau Volleyball Breitensp.",
+                                 "kategorie":  "tsv",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb16",
+                                 "tag":  "Do",
+                                 "halle":  "stadionhalle",
+                                 "start":  "09:00",
+                                 "ende":  "11:00",
+                                 "label":  "SG Medizin Frauen Breitensp.",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb17",
+                                 "tag":  "Fr",
+                                 "halle":  "stadionhalle",
+                                 "start":  "15:30",
+                                 "ende":  "18:00",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb18",
+                                 "tag":  "Fr",
+                                 "halle":  "stadionhalle",
+                                 "start":  "18:00",
+                                 "ende":  "22:30",
+                                 "label":  "Budokan",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb19",
+                                 "tag":  "Fr",
+                                 "halle":  "stadionhalle",
+                                 "start":  "09:30",
+                                 "ende":  "11:30",
+                                 "label":  "Raphaels Heim Hr. Senge",
+                                 "kategorie":  "fremd",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb20",
+                                 "tag":  "Mo",
+                                 "halle":  "lkh-kurpark",
+                                 "start":  "16:00",
+                                 "ende":  "19:00",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb21",
+                                 "tag":  "Mo",
+                                 "halle":  "lkh-kurpark",
+                                 "start":  "19:00",
+                                 "ende":  "20:30",
+                                 "label":  "SCH Volleyball Erhard staufenb",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb22",
+                                 "tag":  "Di",
+                                 "halle":  "lkh-kurpark",
+                                 "start":  "19:00",
+                                 "ende":  "20:30",
+                                 "label":  "SCH /1 Hälfte Breitensport nur 1 Drittel",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb23",
+                                 "tag":  "Do",
+                                 "halle":  "lkh-kurpark",
+                                 "start":  "16:00",
+                                 "ende":  "17:30",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb24",
+                                 "tag":  "Fr",
+                                 "halle":  "lkh-kurpark",
+                                 "start":  "16:00",
+                                 "ende":  "19:00",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb25",
+                                 "tag":  "Fr",
+                                 "halle":  "lkh-kurpark",
+                                 "start":  "20:30",
+                                 "ende":  "22:30",
+                                 "label":  "SCH 2. MA",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb26",
+                                 "tag":  "Mo",
+                                 "halle":  "kath-gymn",
+                                 "start":  "17:00",
+                                 "ende":  "18:30",
+                                 "label":  "SCH D2 Oliver Br.",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb27",
+                                 "tag":  "Di",
+                                 "halle":  "kath-gymn",
+                                 "start":  "17:00",
+                                 "ende":  "18:30",
+                                 "label":  "SCH C1 C Preiß",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb28",
+                                 "tag":  "Mo",
+                                 "halle":  "liethenhalle",
+                                 "start":  "18:00",
+                                 "ende":  "21:00",
+                                 "label":  "SCH MO Kicker E.S. SCH Frauen Gymn Breitensport",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb29",
+                                 "tag":  "Di",
+                                 "halle":  "liethenhalle",
+                                 "start":  "17:00",
+                                 "ende":  "18:30",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb30",
+                                 "tag":  "Mi",
+                                 "halle":  "liethenhalle",
+                                 "start":  "17:00",
+                                 "ende":  "18:30",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb31",
+                                 "tag":  "Fr",
+                                 "halle":  "liethenhalle",
+                                 "start":  "16:00",
+                                 "ende":  "19:00",
+                                 "label":  "SCH AH 1 und 2",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb32",
+                                 "tag":  "Mo",
+                                 "halle":  "stormhalle",
+                                 "start":  "20:00",
+                                 "ende":  "21:30",
+                                 "label":  "SCH Wandergrup M W",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb33",
+                                 "tag":  "Di",
+                                 "halle":  "stormhalle",
+                                 "start":  "20:00",
+                                 "ende":  "21:30",
+                                 "label":  "SCH Radsport P E",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb34",
+                                 "tag":  "Mi",
+                                 "halle":  "stormhalle",
+                                 "start":  "15:30",
+                                 "ende":  "18:30",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb35",
+                                 "tag":  "Mi",
+                                 "halle":  "stormhalle",
+                                 "start":  "20:00",
+                                 "ende":  "21:30",
+                                 "label":  "SCH frei ehemals Breitensport",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb36",
+                                 "tag":  "Do",
+                                 "halle":  "stormhalle",
+                                 "start":  "15:30",
+                                 "ende":  "17:00",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb37",
+                                 "tag":  "Fr",
+                                 "halle":  "stormhalle",
+                                 "start":  "15:30",
+                                 "ende":  "17:00",
+                                 "label":  "SCH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb38",
+                                 "tag":  "Fr",
+                                 "halle":  "stormhalle",
+                                 "start":  "20:00",
+                                 "ende":  "21:30",
+                                 "label":  "SCH AH",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb39",
+                                 "tag":  "Sa",
+                                 "halle":  "stormhalle",
+                                 "start":  "13:00",
+                                 "ende":  "14:30",
+                                 "label":  "SCH C.Hartmann",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb40",
+                                 "tag":  "Mo",
+                                 "halle":  "solidorhalle",
+                                 "start":  "16:30",
+                                 "ende":  "18:30",
+                                 "label":  "Staatl Gymn Frauen- gymn SCH",
+                                 "kategorie":  "freizeit",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb41",
+                                 "tag":  "Do",
+                                 "halle":  "solidorhalle",
+                                 "start":  "16:30",
+                                 "ende":  "18:00",
+                                 "label":  "SCH Chip 336",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             },
+                             {
+                                 "id":  "hb42",
+                                 "tag":  "Fr",
+                                 "halle":  "solidorhalle",
+                                 "start":  "16:00",
+                                 "ende":  "18:00",
+                                 "label":  "SCH Chip 166",
+                                 "kategorie":  "sch",
+                                 "notiz":  ""
+                             }
+                         ]
+}

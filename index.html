@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🏟️ Platzbelegung</title>
+<meta name="theme-color" content="#1a56a0" />
+<link rel="stylesheet" href="style.css?v=1.0" />
+</head>
+<body>
+
+  <div class="connect-screen" id="connect-screen">
+    <div class="card">
+      <h2>🏟️ Platzbelegung</h2>
+      <p id="connect-message">Bitte über die Tools-Übersicht anmelden, um den Platzbelegungsplan zu sehen.</p>
+      <div class="btn-row">
+        <a class="btn" href="https://tecko1985.github.io/ToolsUebersicht/">Zur Tools-Übersicht</a>
+      </div>
+      <p class="muted" id="cloud-error" style="margin-top:14px;"></p>
+    </div>
+  </div>
+
+  <div id="app-shell" style="display:none;">
+    <header>
+      <h1>🏟️ Platzbelegung <span class="version-badge version-badge-link" id="version-badge" role="button" tabindex="0" title="Versionshistorie ansehen"></span></h1>
+      <a href="https://tecko1985.github.io/ToolsUebersicht/" class="back-to-dashboard">← Zurück zum Dashboard</a>
+      <div class="header-right">
+        <span class="header-status" id="save-status"></span>
+        <span class="header-user" id="header-user"></span>
+        <img class="header-logo" src="logo.png" alt="1. SC 1911 e.V. Heilbad Heiligenstadt" />
+      </div>
+    </header>
+
+    <div class="bereich-switch" id="bereich-switch">
+      <button data-bereich="platz" class="active">⚽ Platzbelegung</button>
+      <button data-bereich="halle">🏀 Hallenbelegung</button>
+    </div>
+
+    <nav>
+      <button data-tab="gitter" class="active">Gitter</button>
+      <button data-tab="liste">Liste</button>
+      <button data-tab="einstellungen" style="margin-left:auto;">Einstellungen</button>
+    </nav>
+
+    <main>
+
+      <!-- ---------- Gitter ---------- -->
+      <section class="tab-section active" id="tab-gitter">
+        <div class="toolbar">
+          <div class="day-switch" id="day-switch"></div>
+          <div class="toolbar-right">
+            <select id="gitter-standort"><option value="">Alle Standorte</option></select>
+            <button class="btn small editor-only hidden" id="btn-new-gitter">+ Neue Belegung</button>
+          </div>
+        </div>
+        <div class="legend" id="legend"></div>
+        <div class="gueltig-hint muted" id="gueltig-hint"></div>
+        <div class="grid-scroll">
+          <div id="grid"></div>
+        </div>
+        <div class="empty-state hidden" id="gitter-empty">Für diesen Tag sind keine Belegungen erfasst.</div>
+      </section>
+
+      <!-- ---------- Liste ---------- -->
+      <section class="tab-section" id="tab-liste">
+        <div class="card">
+          <div class="filter-bar">
+            <input type="search" id="liste-search" placeholder="Suche nach Mannschaft / Kürzel…" />
+            <select id="liste-tag"><option value="">Alle Tage</option></select>
+            <select id="liste-standort"><option value="">Alle Standorte</option></select>
+            <select id="liste-kategorie"><option value="">Alle Kategorien</option></select>
+            <span class="filter-count" id="liste-count"></span>
+          </div>
+          <div class="list-row-header">
+            <span>Tag</span><span>Zeit</span><span>Platz</span><span>Mannschaft</span><span>Kategorie</span>
+          </div>
+          <div class="list-rows" id="liste-rows"></div>
+          <div class="empty-state hidden" id="liste-empty">Keine Belegungen gefunden.</div>
+        </div>
+        <button class="btn editor-only hidden" id="btn-new-liste">+ Neue Belegung</button>
+      </section>
+
+      <!-- ---------- Einstellungen ---------- -->
+      <section class="tab-section" id="tab-einstellungen">
+        <div class="import-banner hidden" id="import-banner">
+          <p>Es sind noch keine Belegungen erfasst. Der bestehende Excel-Plan kann einmalig (als JSON-Datei) importiert werden.</p>
+          <button class="btn success editor-only hidden" id="btn-import-seed">Datendatei auswählen…</button>
+          <input type="file" id="import-file-input" accept="application/json" class="hidden" />
+        </div>
+        <div class="card">
+          <h2>Plan-Info <span class="version-badge" id="version-badge-2"></span></h2>
+          <div class="form-grid" id="meta-view"></div>
+          <p class="muted" id="einstellungen-user" style="margin-top:10px;"></p>
+        </div>
+        <div class="card">
+          <h2>Änderungen</h2>
+          <div id="changelog-list"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ---------- Belegungs-Formular ---------- -->
+  <div class="modal-overlay hidden" id="belegung-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="belegung-modal-title">Neue Belegung</h2>
+        <button class="modal-close" id="belegung-modal-close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="belegung-form">
+          <div class="form-grid">
+            <div class="form-field"><label>Tag *</label><select id="bf-tag"></select></div>
+            <div class="form-field"><label id="bf-platz-label">Platz *</label><select id="bf-platz"></select></div>
+            <div class="form-field"><label>Von *</label><input type="time" id="bf-start" step="1800" /></div>
+            <div class="form-field"><label>Bis *</label><input type="time" id="bf-ende" step="1800" /></div>
+            <div class="form-field"><label>Mannschaft / Kürzel *</label><input type="text" id="bf-label" placeholder="z. B. D1/2, 1.MA, FZG" /></div>
+            <div class="form-field"><label>Kategorie</label><select id="bf-kategorie"></select></div>
+          </div>
+          <div class="form-field wide"><label>Ansprechpartner</label><input type="text" id="bf-ansprechpartner" placeholder="optional" /></div>
+          <div class="form-field wide"><label>Notiz</label><input type="text" id="bf-notiz" placeholder="optional" /></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn danger hidden" id="btn-delete-belegung">Löschen</button>
+        <div class="btn-row">
+          <button class="btn secondary" id="btn-cancel-belegung">Abbrechen</button>
+          <button class="btn success" id="btn-save-belegung">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js?v=1.0"></script>
+  <script src="db.js?v=1.0"></script>
+  <script src="app.js?v=1.0"></script>
+</body>
+</html>
