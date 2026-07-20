@@ -57,18 +57,6 @@ const DEFAULT_KATEGORIEN = [
 
 const APP_CHANGELOG = [
   {
-    version: "1.1",
-    groups: [
-      {
-        title: "Speichern",
-        items: [
-          "Wurden mehrere Belegungen zügig hintereinander angelegt, geändert, gelöscht oder im Gitter verschoben, erschien wiederholt die Meldung, die Daten seien zwischenzeitlich auf einem anderen Gerät geändert worden — obwohl niemand sonst am Plan gearbeitet hat. Die zuletzt gemachte Änderung ging dabei verloren.",
-          "Ursache war, dass zwei Speichervorgänge gleichzeitig unterwegs sein konnten. Jetzt wird immer nur ein Speichervorgang gleichzeitig ausgeführt; alles, was währenddessen geändert wird, speichert die App unmittelbar danach automatisch nach."
-        ]
-      }
-    ]
-  },
-  {
     version: "1.0",
     groups: [
       {
