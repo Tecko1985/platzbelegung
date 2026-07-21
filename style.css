@@ -326,3 +326,8 @@ td.slot-free.drop-target { background: var(--blue-light); box-shadow: inset 0 0 
   display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
 }
 .import-banner p { color: var(--text); }
+
+/* Rechte Nav-Gruppe (Einstellungen/Verwaltung + Info). Das margin haengt
+   am Wrapper, damit die Gruppe rechts bleibt, auch wenn einzelne Buttons
+   fuer Nicht-Admins ausgeblendet sind. */
+nav .nav-right { margin-left: auto; display: flex; gap: inherit; }
