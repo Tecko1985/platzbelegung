@@ -234,6 +234,165 @@ function renderListe() {
   document.getElementById("liste-empty").classList.toggle("hidden", list.length > 0);
 }
 
+// ---------- PDF-Export der Liste ----------
+// jsPDF + autoTable sind zusammen rund 400 KB und werden nur hier gebraucht — sie
+// stehen deshalb NICHT im <head>, sondern werden beim ersten Bedarf nachgeladen.
+// Jeder weitere Aufruf bekommt dieselbe Promise; ein Fehlschlag wird vergessen,
+// damit ein zweiter Versuch möglich ist.
+const bibliotheken = new Map();
+function ladeBibliothek(url) {
+  if (bibliotheken.has(url)) return bibliotheken.get(url);
+  const p = new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = url;
+    s.onload = () => resolve();
+    s.onerror = () => {
+      bibliotheken.delete(url);
+      reject(new Error("Bibliothek konnte nicht geladen werden: " + url));
+    };
+    document.head.appendChild(s);
+  });
+  bibliotheken.set(url, p);
+  return p;
+}
+// autoTable hängt sich an jsPDF an und braucht es deshalb VOR sich — die beiden
+// nacheinander laden, nicht parallel.
+async function ladePdfBibliotheken() {
+  await ladeBibliothek("https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js");
+  await ladeBibliothek("https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js");
+}
+
+function hexToRgb(hex) {
+  const c = (hex || "").replace("#", "");
+  if (c.length !== 6) return [233, 236, 239];
+  return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
+}
+
+// Beschreibt den eingestellten Filter in Worten — steht als Untertitel im PDF, damit
+// ein ausgedrucktes Blatt selbst erklärt, welchen Ausschnitt es zeigt. Die Texte
+// kommen aus den Dropdowns selbst, damit sie nie auseinanderlaufen.
+function filterBeschreibung() {
+  const teile = [];
+  ["liste-tag", "liste-standort", "liste-kategorie"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el && el.value) teile.push(el.options[el.selectedIndex].text);
+  });
+  const q = (document.getElementById("liste-search").value || "").trim();
+  if (q) teile.push(`Suche: „${q}“`);
+  return teile.length ? teile.join(" · ") : "Alle Belegungen";
+}
+
+// Dateiname: Bereich + ggf. gewählter Tag + Datum, z. B. Platzbelegung_Montag_2026-07-23.pdf
+function pdfDateiname() {
+  const tagEl = document.getElementById("liste-tag");
+  const tagTeil = tagEl && tagEl.value ? "_" + tagName(tagEl.value) : "";
+  return `${bcfg().name}${tagTeil}_${new Date().toISOString().slice(0, 10)}.pdf`;
+}
+
+async function exportListePdf() {
+  const list = filteredListe();
+  if (!list.length) {
+    alert("Für den eingestellten Filter gibt es keine Belegungen.");
+    return;
+  }
+  const btn = document.getElementById("btn-pdf-liste");
+  const beschriftung = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "PDF wird erstellt…";
+  try {
+    await ladePdfBibliotheken();
+    if (!window.jspdf || typeof new window.jspdf.jsPDF().autoTable !== "function") {
+      alert("Die PDF-Bibliothek konnte nicht geladen werden — bitte die Seite neu laden.");
+      return;
+    }
+    baueListenPdf(list);
+  } catch (e) {
+    console.error(e);
+    alert("Die PDF-Bibliothek konnte nicht geladen werden (keine Internetverbindung?).");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = beschriftung;
+  }
+}
+
+function baueListenPdf(list) {
+  const cfg = bcfg();
+  const m = currentMeta();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+  doc.setFontSize(16);
+  doc.text(cfg.name, 14, 16);
+  doc.setFontSize(10);
+  doc.setTextColor(110);
+  doc.text(filterBeschreibung(), 14, 22);
+  doc.text([
+    m.gueltigAb ? "Gültig ab " + isoToDisplay(m.gueltigAb) : "",
+    m.saison ? "Saison " + m.saison : "",
+    `${list.length} von ${belegungsListe().length} Belegungen`,
+    "Stand " + new Date().toLocaleDateString("de-DE")
+  ].filter(Boolean).join(" · "), 14, 27);
+  doc.setTextColor(0);
+
+  // Die Liste ist nach Tag sortiert — je Tag eine Zwischenüberschrift, damit ein
+  // mehrseitiger Ausdruck lesbar bleibt. Die erste Spalte ist nur ein schmaler
+  // Farbbalken in der Kategoriefarbe, wie der farbige Rand in der Listenansicht.
+  const body = [];
+  let letzterTag = null;
+  list.forEach((b) => {
+    if (b.tag !== letzterTag) {
+      letzterTag = b.tag;
+      body.push([{
+        content: tagName(b.tag),
+        colSpan: 5,
+        styles: { fontStyle: "bold", fillColor: [232, 240, 251], textColor: [26, 86, 160] }
+      }]);
+    }
+    const p = ortById(b[cfg.ortsField]);
+    const kat = kategorieById(b.kategorie);
+    const ortText = !p ? b[cfg.ortsField]
+      : (p.standort && p.standort !== p.name ? `${p.name}\n${p.standort}` : p.name);
+    body.push([
+      { content: "", styles: { fillColor: hexToRgb(kat ? kat.farbe : "#e9ecef") } },
+      `${b.start}–${b.ende}`,
+      ortText,
+      b.label || "",
+      kat ? kat.name : "—"
+    ]);
+  });
+
+  doc.autoTable({
+    head: [["", "Zeit", cfg.ortLabel, "Mannschaft / Kürzel", "Kategorie"]],
+    body,
+    startY: 32,
+    margin: { top: 14, left: 14, right: 14, bottom: 18 },
+    styles: { fontSize: 9, cellPadding: 2, overflow: "linebreak", valign: "middle" },
+    headStyles: { fillColor: [26, 86, 160] },
+    alternateRowStyles: { fillColor: [247, 249, 252] },
+    // Feste Breiten in mm (A4 hoch, netto 182 mm): der längste Kategoriename
+    // („1. SC 1911 (Herren & Jugend)“, 42,6 mm bei Schriftgröße 9) passt damit
+    // in eine Zeile, für die Mannschaft bleiben 61 mm.
+    columnStyles: {
+      0: { cellWidth: 3 },
+      1: { cellWidth: 24 },
+      2: { cellWidth: 46 },
+      3: { fontStyle: "bold" },
+      4: { cellWidth: 48 }
+    }
+  });
+
+  const seiten = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= seiten; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(130);
+    doc.text(cfg.name + " · 1. SC 1911 e.V. Heilbad Heiligenstadt", 14, 289);
+    doc.text(`Seite ${i} von ${seiten}`, 196, 289, { align: "right" });
+  }
+
+  doc.save(pdfDateiname());
+}
+
 // ---------- Meta / Changelog / Version / Nutzer ----------
 function renderMeta() {
   const m = currentMeta();
@@ -914,6 +1073,7 @@ function setupListeners() {
     const row = e.target.closest(".list-row");
     if (row) openBelegungModal(row.dataset.id);
   });
+  document.getElementById("btn-pdf-liste").addEventListener("click", exportListePdf);
 
   document.getElementById("belegung-modal-close").addEventListener("click", closeBelegungModal);
   document.getElementById("btn-cancel-belegung").addEventListener("click", closeBelegungModal);

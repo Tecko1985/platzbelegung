@@ -70,6 +70,7 @@ const APP_CHANGELOG = [
           "Zwei komplett getrennte Bereiche: Platzbelegung (14 Plätze am Hauptplatz sowie in Kalteneber, Rengelrode und Günterode) und Hallenbelegung für die Hallensaison (6 Hallen: Stadionhalle, LK Halle Kurpark, Kath. Gymnasium, Liethenhalle, Th.-Storm-Schule, Solidorhalle/Staatl. Gymnasium) — jeweils eigenes Gitter, eigene Liste und eigener Excel-Import.",
           "Wochenplan als Gitter (Zeit × Platz bzw. Halle) je Wochentag Montag–Samstag, farblich nach Kategorie.",
           "Filterbare Terminliste (nach Tag, Standort, Kategorie und Textsuche) — ideal fürs Handy.",
+          "Die Terminliste lässt sich als PDF speichern oder ausdrucken — genau in dem Umfang, den der eingestellte Filter gerade zeigt, nach Wochentagen gegliedert und mit den Farben der Kategorien.",
           "Standort-Filter trennt den Hauptplatz von den Außenstandorten.",
           "Auf eine Belegung im Gitter oder in der Liste klicken zeigt alle Details (Ansprechpartner, Notiz) in einer Ansehen-Ansicht — auch für Nutzer ohne Bearbeiten-Recht."
         ]

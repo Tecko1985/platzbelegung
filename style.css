@@ -143,6 +143,7 @@ button.btn:hover, .btn:hover { opacity: 0.9; }
 .btn.danger { background: var(--red); }
 .btn.success { background: var(--green); }
 .btn.small { padding: 6px 12px; font-size: 13px; }
+button.btn:disabled, button.btn:disabled:hover { opacity: 0.5; cursor: not-allowed; }
 
 /* ---------- Toolbar / Tagesumschalter ---------- */
 .toolbar {
@@ -242,7 +243,10 @@ td.slot-free.drop-target { background: var(--blue-light); box-shadow: inset 0 0 
   padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--white);
 }
 .filter-bar input[type="search"] { flex: 1; min-width: 180px; }
-.filter-count { font-size: 13px; color: var(--muted); margin-left: auto; }
+/* Zähler und PDF-Knopf hängen als Paar am rechten Rand — der Umbruch auf schmalen
+   Bildschirmen nimmt beide zusammen mit, statt sie auf zwei Zeilen zu reißen. */
+.filter-bar-end { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.filter-count { font-size: 13px; color: var(--muted); }
 
 .list-rows { display: flex; flex-direction: column; gap: 8px; }
 .list-row {
