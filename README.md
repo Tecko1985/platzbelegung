@@ -40,8 +40,17 @@ gleichzeitige Änderungen von zwei Geräten werden erkannt und gemeldet.
   `platzbelegung-seed.json`
 - `tools/hallen-excel-to-seed.ps1` — dito für den Hallenplan (`hallenbelegung-seed.json`)
 
+Die erzeugten Seed-Dateien liegen **bewusst nicht im Repo** (`.gitignore`): in
+ihrem `label`-Feld stehen echte Personennamen aus dem Excel-Original, und dieses
+Repo ist öffentlich. Sie werden zur Laufzeit auch von nichts geladen — der Import
+läuft über den Dateiauswähler im Browser, nicht über einen Abruf aus dem Repo.
+
 ## Erstbefüllung
 
 1. Als berechtigter Nutzer anmelden, Bereich wählen, Tab **Einstellungen** →
    „Datendatei auswählen…“ → die jeweilige Seed-JSON wählen.
 2. Danach wird der Plan ausschließlich in der App gepflegt.
+
+Beides ist längst erledigt; die Daten leben in der Nextcloud-Datei der App. Für
+einen Rückweg auf einen früheren Stand sind die **Backups** im Tab
+„Einstellungen" der Weg, nicht ein erneuter Seed-Import.

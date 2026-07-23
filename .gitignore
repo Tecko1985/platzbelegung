@@ -1,1 +1,6 @@
 .claude/
+
+# Excel-Konvertate: im label-Feld stehen echte Personennamen aus dem Original,
+# und dieses Repo ist oeffentlich. Die erzeugten Dateien gehoeren nach
+# E:\_seed-archiv\platzbelegung\ (siehe LIESMICH.md dort), nicht hierher.
+*-seed.json
