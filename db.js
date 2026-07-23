@@ -100,6 +100,77 @@ function gatewaySaveBeacon(dataObj) {
   }
 }
 
+// ---------- Datei-Anhaenge (Backups) ----------
+// Backups liegen NICHT in der App-JSON, sondern je als eigene Datei im Ordner
+// dateien/<uuid> neben ihr (Gateway-Aktionen dav-file-*). Grund: die App
+// schreibt bei jeder Aenderung ihren KOMPLETTEN Datenstand -- zehn eingebettete
+// Backups wuerden jeden einzelnen Speichervorgang um ein Vielfaches verteuern
+// und den Datenstand ueber die 64-KB-Grenze von gatewaySaveBeacon() heben,
+// womit das Sicherheitsnetz beim Schliessen des Tabs ausfiele. In der App-JSON
+// steht deshalb nur ein schlanker Index (Zeitpunkt, Kommentar, Anzahl).
+//
+// Rechte kommen ohne Zusatzarbeit: Schreiben und Loeschen verlangen fuer diese
+// App serverseitig ein Bearbeiten-Recht (WRITE_REQUIRES_EDIT_PERMISSION im
+// Worker), Lesen die Tool-Sichtbarkeit -- dieselbe Schranke wie dav-save.
+
+// btoa() versteht nur Latin-1. Umlaute in Mannschaftsnamen wuerden es werfen,
+// deshalb erst nach UTF-8 kodieren und die Bytes in Haeppchen umwandeln
+// (String.fromCharCode nimmt nicht beliebig viele Argumente auf einmal).
+function jsonToBase64(obj) {
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  let bin = "";
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(bin);
+}
+
+// Datei-Ids muessen im Worker das UUID-Format erfuellen (FILE_ID_RE), sonst 400.
+// Der uuid()-Helfer in app.js hat fuer alte Browser einen kuerzeren Fallback --
+// fuer Dateinamen braucht es die vollstaendige Form.
+function fileUuid() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  const b = new Uint8Array(16);
+  if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(b);
+  else for (let i = 0; i < b.length; i++) b[i] = (Math.random() * 256) | 0;
+  b[6] = (b[6] & 0x0f) | 0x40; // Version 4
+  b[8] = (b[8] & 0x3f) | 0x80; // Variante
+  const h = [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
+
+async function gatewayFilePut(id, name, obj) {
+  await gatewayRequest({
+    action: "dav-file-put",
+    app: GATEWAY_APP_ID,
+    id,
+    name,
+    contentType: "application/json",
+    dataBase64: jsonToBase64(obj)
+  });
+}
+
+// Antwortet mit den rohen Datei-Bytes statt der ueblichen JSON-Huelle, laeuft
+// deshalb an gatewayRequest() vorbei.
+async function gatewayFileGet(id) {
+  const token = getSessionToken();
+  if (!token) throw new NotLoggedInError();
+  const resp = await fetch(GATEWAY_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify({ action: "dav-file-get", app: GATEWAY_APP_ID, id })
+  });
+  if (resp.status === 401) throw new NotLoggedInError("Sitzung abgelaufen");
+  if (resp.status === 404) throw new Error("Die Backup-Datei wurde nicht gefunden.");
+  if (!resp.ok) throw new Error(`Gateway-Fehler (HTTP ${resp.status})`);
+  return resp.json();
+}
+
+async function gatewayFileDelete(id) {
+  await gatewayRequest({ action: "dav-file-delete", app: GATEWAY_APP_ID, id });
+}
+
 // Liefert {username, isAdmin, groupIds, vorname, nachname, canEdit} der eingeloggten Person.
 async function fetchMe() {
   // Genau EINMAL aus dem letzten dav-load bedienen, danach wieder echt fragen:

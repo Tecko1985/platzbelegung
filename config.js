@@ -14,6 +14,11 @@ const SLOT_MIN = 30;               // Raster-Granularität in Minuten
 const DEFAULT_GRID_START = "15:30"; // Fallback-Fenster, falls ein Tag keine Termine hat
 const DEFAULT_GRID_END = "22:00";
 
+// Höchstzahl gespeicherter Backups. Ist der Vorrat voll, wird NICHTS automatisch
+// gelöscht — die App verlangt stattdessen, dass zuerst eines von Hand entfernt
+// wird (bewusste Entscheidung: ein Backup verschwindet nie ungefragt).
+const MAX_BACKUPS = 10;
+
 // Startbestand für Plätze & Kategorien — greift, wenn im Gateway noch keine bzw.
 // leere Daten liegen, damit die App (Dropdowns, Gitter) auch vor dem Excel-Import
 // bedienbar ist. Muss zu tools/excel-to-seed.ps1 passen.
@@ -83,6 +88,15 @@ const APP_CHANGELOG = [
         items: [
           "Einmaliger Import des bestehenden Excel-Plans (als JSON) je Bereich per Knopfdruck.",
           "Automatische Nextcloud-Synchronisierung über die zentrale Anmeldung (Tools-Übersicht) — kein separates Passwort nötig; gleichzeitige Änderungen von zwei Geräten werden erkannt und gemeldet."
+        ]
+      },
+      {
+        title: "Backups",
+        items: [
+          "Im Tab „Einstellungen“ lassen sich bis zu 10 Backups anlegen — jedes sichert den vollständigen Stand beider Bereiche (Platzbelegung und Hallenbelegung) und kann mit einem Kommentar versehen werden.",
+          "Jeder gesicherte Stand lässt sich per Knopfdruck wieder herstellen; die Liste zeigt Zeitpunkt, wer gesichert hat, den Kommentar und die Anzahl der enthaltenen Belegungen.",
+          "Vor einem Excel-Import und vor dem Wiederherstellen legt die App automatisch einen Sicherungspunkt an — die beiden Momente, in denen viel auf einmal überschrieben wird.",
+          "Es wird nie ein Backup von selbst gelöscht: sind alle 10 Plätze belegt, meldet die App das und wartet, bis eines von Hand entfernt wurde."
         ]
       }
     ]

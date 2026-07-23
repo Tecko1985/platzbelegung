@@ -39,18 +39,19 @@ function contrastColor(hex) {
 // Beide Bereiche teilen sich Kategorien und Wochentage, haben aber komplett getrennte
 // Orts- und Belegungslisten (eigene Stammdaten, eigenes Meta/Import) — siehe BEREICHE.
 const BEREICHE = {
-  platz: { ortsKey: "plaetze", belegKey: "belegungen", metaKey: "meta", ortsField: "platz", ortLabel: "Platz" },
-  halle: { ortsKey: "hallen", belegKey: "hallenbelegungen", metaKey: "hallenMeta", ortsField: "halle", ortLabel: "Halle" }
+  platz: { ortsKey: "plaetze", belegKey: "belegungen", metaKey: "meta", ortsField: "platz", ortLabel: "Platz", name: "Platzbelegung" },
+  halle: { ortsKey: "hallen", belegKey: "hallenbelegungen", metaKey: "hallenMeta", ortsField: "halle", ortLabel: "Halle", name: "Hallenbelegung" }
 };
 let currentBereich = "platz";
 function bcfg() { return BEREICHE[currentBereich]; }
 
 // ---------- State ----------
-let appData = { meta: {}, plaetze: [], kategorien: [], belegungen: [], hallenMeta: {}, hallen: [], hallenbelegungen: [] };
+let appData = { meta: {}, plaetze: [], kategorien: [], belegungen: [], hallenMeta: {}, hallen: [], hallenbelegungen: [], backups: [] };
 let currentUser = null;
 let currentDay = TAGE[0].id;
 let editingBelegungId = null;
 let persistTimer = null;
+let backupLaeuft = false;
 
 // ---------- Normalisierung & Lookups ----------
 function normalizeData(data) {
@@ -62,7 +63,10 @@ function normalizeData(data) {
     belegungen: Array.isArray(d.belegungen) ? d.belegungen : [],
     hallenMeta: d.hallenMeta && typeof d.hallenMeta === "object" ? d.hallenMeta : {},
     hallen: Array.isArray(d.hallen) && d.hallen.length ? d.hallen : DEFAULT_HALLEN.slice(),
-    hallenbelegungen: Array.isArray(d.hallenbelegungen) ? d.hallenbelegungen : []
+    hallenbelegungen: Array.isArray(d.hallenbelegungen) ? d.hallenbelegungen : [],
+    // Nur das Verzeichnis der Backups (Zeitpunkt, Kommentar, Anzahl) — die
+    // gesicherten Daten selbst liegen je in einer eigenen Datei, siehe db.js.
+    backups: Array.isArray(d.backups) ? d.backups : []
   };
 }
 function ortsListe() { return appData[bcfg().ortsKey]; }
@@ -269,13 +273,19 @@ function canEdit() {
   return currentUser.isAdmin || !!currentUser.canEdit;
 }
 
+// Anzeigename der eingeloggten Person — Vor-/Nachname, sonst der Nutzername.
+function eigenerAnzeigeName() {
+  if (!currentUser) return "";
+  return (currentUser.vorname || currentUser.nachname)
+    ? `${currentUser.vorname || ""} ${currentUser.nachname || ""}`.trim()
+    : currentUser.username;
+}
+
 function renderHeaderUser() {
   const el = document.getElementById("header-user");
   const el2 = document.getElementById("einstellungen-user");
   if (!currentUser) { if (el) el.textContent = ""; if (el2) el2.textContent = ""; return; }
-  const name = (currentUser.vorname || currentUser.nachname)
-    ? `${currentUser.vorname || ""} ${currentUser.nachname || ""}`.trim()
-    : currentUser.username;
+  const name = eigenerAnzeigeName();
   const rolle = currentUser.isAdmin ? " (Admin)" : (canEdit() ? " (Bearbeiter)" : "");
   if (el) el.textContent = "👤 " + name + rolle;
   if (el2) el2.textContent = "Angemeldet als " + name + rolle +
@@ -296,6 +306,7 @@ function renderAll() {
   renderListe();
   renderMeta();
   renderVersionInfo();
+  renderBackups();
   document.getElementById("import-banner").classList.toggle("hidden", belegungsListe().length > 0);
 }
 
@@ -416,6 +427,9 @@ function handleImportFile(file) {
     if (belegungsListe().length > 0 &&
         !confirm("Es sind bereits Belegungen vorhanden. Diese durch den Import ERSETZEN?")) return;
     if (!confirm(`Wirklich ${parsed[cfg.belegKey].length} Belegungen importieren?`)) return;
+    // Sicherungspunkt VOR dem Ersetzen — ein Import überschreibt den kompletten
+    // Bestand eines Bereichs auf einen Schlag.
+    if (!(await ensureSicherungspunkt(`Automatisch vor dem Import (${cfg.name})`))) return;
     // Nur die Felder des AKTUELLEN Bereichs ersetzen — der jeweils andere Bereich
     // (z. B. die 71 bestehenden Platzbelegungen) bleibt dabei unangetastet.
     appData = normalizeData(Object.assign({}, appData, {
@@ -430,6 +444,234 @@ function handleImportFile(file) {
   reader.readAsText(file, "utf-8");
 }
 
+// ---------- Backups ----------
+// Ein Backup sichert IMMER beide Bereiche zusammen (ein Sicherungspunkt = ein
+// vollständiger Stand der App). Getrennt wird nur die Ablage: die Daten liegen
+// je in einer eigenen Datei im Gateway, in appData steht nur der Index — sonst
+// würde jeder normale Speichervorgang alle Backups mitschleppen (siehe db.js).
+function backupListe() {
+  if (!Array.isArray(appData.backups)) appData.backups = [];
+  return appData.backups;
+}
+
+// Der zu sichernde Nutzdatenstand. Bewusst OHNE das Backup-Verzeichnis selbst:
+// beim Wiederherstellen soll der Datenbestand von damals zurückkommen, nicht
+// der damalige Stand der Backup-Liste — sonst würden neuere Backups aus der
+// Liste verschwinden und wären nur noch als verwaiste Dateien vorhanden.
+function backupNutzdaten() {
+  return {
+    meta: appData.meta,
+    plaetze: appData.plaetze,
+    kategorien: appData.kategorien,
+    belegungen: appData.belegungen,
+    hallenMeta: appData.hallenMeta,
+    hallen: appData.hallen,
+    hallenbelegungen: appData.hallenbelegungen
+  };
+}
+
+function backupZeitpunkt(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return isNaN(d) ? "—" : d.toLocaleString("de-DE", {
+    day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
+  });
+}
+
+// Legt ein Backup an: erst die Datei, dann der Index-Eintrag. Diese Reihenfolge
+// ist Absicht — bricht der zweite Schritt ab, bleibt eine ungenutzte Datei
+// liegen (harmlos). Andersherum stünde ein Eintrag in der Liste, dessen
+// „Wiederherstellen“-Knopf ins Leere greift.
+async function createBackup(kommentar, automatisch) {
+  const id = fileUuid();
+  const erstelltAm = new Date().toISOString();
+  await gatewayFilePut(id, `backup-${erstelltAm.slice(0, 10)}.json`, {
+    formatVersion: 1,
+    appVersion: APP_VERSION,
+    erstelltAm,
+    erstelltVon: currentUser ? currentUser.username : "",
+    kommentar,
+    automatisch: !!automatisch,
+    daten: backupNutzdaten()
+  });
+  backupListe().unshift({
+    id,
+    erstelltAm,
+    erstelltVon: currentUser ? currentUser.username : "",
+    erstelltVonName: eigenerAnzeigeName(),
+    kommentar,
+    automatisch: !!automatisch,
+    anzahlBelegungen: appData.belegungen.length,
+    anzahlHallenbelegungen: appData.hallenbelegungen.length
+  });
+  renderBackups();
+  return saveNow();
+}
+
+// Sicherungspunkt vor einer Aktion, die viel auf einmal überschreibt (Import,
+// Wiederherstellen). Liefert, ob weitergemacht werden soll. Ein fehlender
+// Sicherungspunkt DARF die eigentliche Aktion nicht verhindern — sonst stünde
+// man mit vollem Backup-Vorrat vor einer App, die nichts mehr importiert —
+// aber er wird deutlich gemeldet.
+async function ensureSicherungspunkt(anlass) {
+  if (backupListe().length >= MAX_BACKUPS) {
+    return confirm(
+      `Es kann kein automatischer Sicherungspunkt angelegt werden: alle ${MAX_BACKUPS} Backup-Plätze sind belegt.\n\n` +
+      "Trotzdem fortfahren? Der aktuelle Stand ist dann nicht gesichert.\n\n" +
+      "Abbrechen, um zuerst im Tab „Einstellungen“ ein Backup zu löschen."
+    );
+  }
+  try {
+    const ok = await createBackup(anlass, true);
+    if (ok) return true;
+    return confirm("Der automatische Sicherungspunkt konnte nicht gespeichert werden. Trotzdem fortfahren?");
+  } catch (e) {
+    console.error("Sicherungspunkt fehlgeschlagen", e);
+    return confirm(`Der automatische Sicherungspunkt ist fehlgeschlagen (${e.message}). Trotzdem fortfahren?`);
+  }
+}
+
+function openBackupModal() {
+  if (!canEdit()) return;
+  if (backupListe().length >= MAX_BACKUPS) {
+    alert(
+      `Alle ${MAX_BACKUPS} Backup-Plätze sind belegt.\n\n` +
+      "Bitte zuerst ein vorhandenes Backup löschen — es wird nie eines von selbst entfernt."
+    );
+    return;
+  }
+  document.getElementById("bk-kommentar").value = "";
+  document.getElementById("backup-modal-info").textContent =
+    `Gesichert wird der aktuelle Stand beider Bereiche: ${appData.belegungen.length} Platz- und ` +
+    `${appData.hallenbelegungen.length} Hallenbelegungen. Platz ${backupListe().length + 1} von ${MAX_BACKUPS}.`;
+  document.getElementById("backup-modal").classList.remove("hidden");
+  document.getElementById("bk-kommentar").focus();
+}
+
+function closeBackupModal() {
+  document.getElementById("backup-modal").classList.add("hidden");
+}
+
+async function confirmBackup() {
+  if (!canEdit() || backupLaeuft) return;
+  const kommentar = document.getElementById("bk-kommentar").value.trim();
+  backupLaeuft = true;
+  const btn = document.getElementById("btn-confirm-backup");
+  btn.disabled = true;
+  btn.textContent = "Wird erstellt…";
+  try {
+    const ok = await createBackup(kommentar, false);
+    closeBackupModal();
+    if (ok) alert("Backup erstellt.");
+    else alert("Das Backup wurde angelegt, konnte aber nicht in die Liste eingetragen werden. Bitte die Seite neu laden und erneut versuchen.");
+  } catch (e) {
+    console.error("Backup fehlgeschlagen", e);
+    alert("Backup fehlgeschlagen: " + e.message);
+  } finally {
+    backupLaeuft = false;
+    btn.disabled = false;
+    btn.textContent = "Backup erstellen";
+    renderBackups();
+  }
+}
+
+async function restoreBackup(id) {
+  if (!canEdit() || backupLaeuft) return;
+  const eintrag = backupListe().find((b) => b.id === id);
+  if (!eintrag) return;
+  if (!confirm(
+    `Backup vom ${backupZeitpunkt(eintrag.erstelltAm)} wiederherstellen?\n\n` +
+    (eintrag.kommentar ? `„${eintrag.kommentar}“\n\n` : "") +
+    `Der aktuelle Stand (${appData.belegungen.length} Platz- / ${appData.hallenbelegungen.length} Hallenbelegungen) wird dabei durch ` +
+    `${eintrag.anzahlBelegungen ?? "?"} Platz- / ${eintrag.anzahlHallenbelegungen ?? "?"} Hallenbelegungen ersetzt — in BEIDEN Bereichen.`
+  )) return;
+
+  backupLaeuft = true;
+  try {
+    if (!(await ensureSicherungspunkt("Automatisch vor dem Wiederherstellen"))) return;
+    const inhalt = await gatewayFileGet(id);
+    if (!inhalt || !inhalt.daten || !Array.isArray(inhalt.daten.belegungen)) {
+      alert("Die Backup-Datei hat nicht das erwartete Format und wurde nicht eingespielt.");
+      return;
+    }
+    // Das Backup-Verzeichnis bleibt der AKTUELLE Stand (inkl. des eben
+    // angelegten Sicherungspunkts) — nur die Nutzdaten kommen aus der Datei.
+    appData = normalizeData(Object.assign({}, inhalt.daten, { backups: backupListe() }));
+    renderAll();
+    const ok = await saveNow();
+    alert(ok
+      ? `Backup wiederhergestellt: ${appData.belegungen.length} Platz- und ${appData.hallenbelegungen.length} Hallenbelegungen.`
+      : "Der wiederhergestellte Stand konnte nicht gespeichert werden. Bitte die Seite neu laden und erneut versuchen.");
+  } catch (e) {
+    console.error("Wiederherstellen fehlgeschlagen", e);
+    alert("Wiederherstellen fehlgeschlagen: " + e.message);
+  } finally {
+    backupLaeuft = false;
+    renderBackups();
+  }
+}
+
+// Umgekehrte Reihenfolge wie beim Anlegen: erst den Index speichern, dann die
+// Datei entfernen. Scheitert der zweite Schritt, bleibt eine ungenutzte Datei
+// zurück — deutlich besser als ein Eintrag ohne Datei dahinter.
+async function deleteBackup(id) {
+  if (!canEdit() || backupLaeuft) return;
+  const eintrag = backupListe().find((b) => b.id === id);
+  if (!eintrag) return;
+  if (!confirm(
+    `Backup vom ${backupZeitpunkt(eintrag.erstelltAm)} endgültig löschen?` +
+    (eintrag.kommentar ? `\n\n„${eintrag.kommentar}“` : "")
+  )) return;
+
+  backupLaeuft = true;
+  try {
+    appData.backups = backupListe().filter((b) => b.id !== id);
+    renderBackups();
+    // Kein Zurücksetzen bei Misserfolg: bei einem Konflikt hat writeToGateway()
+    // den Server-Stand bereits neu geladen (die alte Liste hier wieder
+    // hineinzuschreiben würde ihn überbügeln), und bei einem Netzfehler steht
+    // der Eintrag serverseitig ohnehin noch — er ist nach dem nächsten Laden
+    // wieder da. Die Datei bleibt in beiden Fällen unangetastet.
+    if (!(await saveNow())) return;
+    try {
+      await gatewayFileDelete(id);
+    } catch (e) {
+      console.warn("Backup-Datei konnte nicht entfernt werden (Eintrag ist bereits weg)", e);
+    }
+  } finally {
+    backupLaeuft = false;
+    renderBackups();
+  }
+}
+
+function backupRowHtml(b) {
+  const kommentar = (b.kommentar || "").trim();
+  const anzahl = `${b.anzahlBelegungen ?? "?"} Platz- / ${b.anzahlHallenbelegungen ?? "?"} Hallenbelegungen`;
+  const wer = b.erstelltVonName || b.erstelltVon || "—";
+  return `
+    <div class="backup-row${b.automatisch ? " is-auto" : ""}" data-id="${escapeHtml(b.id)}">
+      <div class="bk-main">
+        <div class="bk-comment${kommentar ? "" : " is-empty"}">${escapeHtml(kommentar || "Ohne Kommentar")}</div>
+        <div class="bk-meta">${escapeHtml(backupZeitpunkt(b.erstelltAm))} · ${escapeHtml(wer)} · ${escapeHtml(anzahl)}${b.automatisch ? " · automatisch" : ""}</div>
+      </div>
+      <div class="bk-actions">
+        <button class="btn small secondary" data-act="restore">Wiederherstellen</button>
+        <button class="btn small danger" data-act="delete">Löschen</button>
+      </div>
+    </div>`;
+}
+
+function renderBackups() {
+  const rows = document.getElementById("backup-rows");
+  if (!rows) return;
+  const list = backupListe().slice().sort((a, b) => String(b.erstelltAm || "").localeCompare(String(a.erstelltAm || "")));
+  rows.innerHTML = list.map(backupRowHtml).join("");
+  document.getElementById("backup-empty").classList.toggle("hidden", list.length > 0);
+  document.getElementById("backup-count").textContent = `${list.length} von ${MAX_BACKUPS} Plätzen belegt`;
+  document.getElementById("backup-full-hint").classList.toggle("hidden", list.length < MAX_BACKUPS);
+  document.getElementById("btn-backup-create").disabled = list.length >= MAX_BACKUPS;
+}
+
 // ---------- Tabs ----------
 function switchTab(tab) {
   document.querySelectorAll("nav button[data-tab]").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
@@ -437,6 +679,7 @@ function switchTab(tab) {
   if (tab === "gitter") renderGrid();
   if (tab === "liste") renderListe();
   if (tab === "info") { renderMeta(); renderVersionInfo(); }
+  if (tab === "einstellungen") renderBackups();
 }
 
 // ---------- Gateway: Laden / Speichern / Konflikte ----------
@@ -682,8 +925,24 @@ function setupListeners() {
   document.getElementById("btn-import-seed").addEventListener("click", () => document.getElementById("import-file-input").click());
   document.getElementById("import-file-input").addEventListener("change", (e) => { handleImportFile(e.target.files[0]); e.target.value = ""; });
 
+  document.getElementById("btn-backup-create").addEventListener("click", openBackupModal);
+  document.getElementById("backup-modal-close").addEventListener("click", closeBackupModal);
+  document.getElementById("btn-cancel-backup").addEventListener("click", closeBackupModal);
+  document.getElementById("btn-confirm-backup").addEventListener("click", confirmBackup);
+  document.getElementById("backup-modal").addEventListener("click", (e) => { if (e.target.id === "backup-modal") closeBackupModal(); });
+  document.getElementById("bk-kommentar").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); confirmBackup(); } });
+  document.getElementById("backup-rows").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    const id = btn.closest(".backup-row").dataset.id;
+    if (btn.dataset.act === "restore") restoreBackup(id);
+    else if (btn.dataset.act === "delete") deleteBackup(id);
+  });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !document.getElementById("belegung-modal").classList.contains("hidden")) closeBelegungModal();
+    if (e.key !== "Escape") return;
+    if (!document.getElementById("belegung-modal").classList.contains("hidden")) closeBelegungModal();
+    else if (!document.getElementById("backup-modal").classList.contains("hidden")) closeBackupModal();
   });
 }
 
