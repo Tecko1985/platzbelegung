@@ -81,7 +81,8 @@ const APP_CHANGELOG = [
           "Belegungen anlegen, ändern und löschen über ein Formular (Tag, Platz/Halle, Start/Ende, Kürzel, Ansprechpartner, Kategorie, Notiz) — mit Warnung, wenn sich die Zeit mit einer bestehenden Belegung überschneidet.",
           "Direkt auf ein freies Feld im Gitter tippen legt eine neue Belegung für diesen Platz und diese Zeit an.",
           "Bestehende Belegungen im Gitter per Drag & Drop auf ein freies Feld verschieben.",
-          "Bearbeiten-Recht wird über die Gruppenverwaltung der Tools-Übersicht vergeben; alle übrigen eingeloggten Nutzer sehen den Plan nur an."
+          "Bearbeiten-Recht wird über die Gruppenverwaltung der Tools-Übersicht vergeben; alle übrigen eingeloggten Nutzer sehen den Plan nur an.",
+          "Der Einstellungen-Tab (Datendatei-Import, Backups) erscheint nur noch für Bearbeiter und Admins — für alle anderen war er komplett leer."
         ]
       },
       {
