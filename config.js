@@ -82,7 +82,7 @@ const APP_CHANGELOG = [
           "Direkt auf ein freies Feld im Gitter tippen legt eine neue Belegung für diesen Platz und diese Zeit an.",
           "Bestehende Belegungen im Gitter per Drag & Drop auf ein freies Feld verschieben.",
           "Bearbeiten-Recht wird über die Gruppenverwaltung der Tools-Übersicht vergeben; alle übrigen eingeloggten Nutzer sehen den Plan nur an.",
-          "Der Einstellungen-Tab (Datendatei-Import, Backups) erscheint nur noch für Bearbeiter und Admins — für alle anderen war er komplett leer."
+          "Datendatei-Import und Backups (samt Einstellungen-Tab) sind der Stufe „Administrieren“ vorbehalten (Häkchen im Sichtbarkeits-Panel der Tools-Übersicht) — Bearbeiter pflegen den Plan, strukturelle Eingriffe macht die Administration."
         ]
       },
       {

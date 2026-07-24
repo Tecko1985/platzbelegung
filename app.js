@@ -432,6 +432,15 @@ function canEdit() {
   return currentUser.isAdmin || !!currentUser.canEdit;
 }
 
+// Dritte Stufe "Administrieren" (Tools-Übersicht, seit 2026-07-24): Import und
+// Backups sind strukturelle Eingriffe und hängen an dieser Stufe, nicht mehr am
+// Bearbeiten-Recht. canAdmin kommt wie canEdit aus me (Administrieren schließt
+// Bearbeiten serverseitig ein — umgekehrt nicht).
+function canAdmin() {
+  if (!currentUser) return false;
+  return currentUser.isAdmin || !!currentUser.canAdmin;
+}
+
 // Anzeigename der eingeloggten Person — Vor-/Nachname, sonst der Nutzername.
 function eigenerAnzeigeName() {
   if (!currentUser) return "";
@@ -453,8 +462,10 @@ function renderHeaderUser() {
 
 function applyAdminVisibility() {
   const editable = canEdit();
+  const admin = canAdmin();
   document.body.classList.toggle("can-edit", editable);
   document.querySelectorAll(".editor-only").forEach((el) => el.classList.toggle("hidden", !editable));
+  document.querySelectorAll(".admin-only").forEach((el) => el.classList.toggle("hidden", !admin));
 }
 
 function renderAll() {
@@ -466,7 +477,7 @@ function renderAll() {
   renderMeta();
   renderVersionInfo();
   renderBackups();
-  document.getElementById("import-banner").classList.toggle("hidden", belegungsListe().length > 0);
+  document.getElementById("import-banner").classList.toggle("hidden", belegungsListe().length > 0 || !canAdmin());
 }
 
 // ---------- Bereich-Umschalter (Platzbelegung / Hallenbelegung) ----------
@@ -572,7 +583,7 @@ function deleteBelegung() {
 // ---------- Import (einmaliger Excel-Seed als JSON, je Bereich getrennt) ----------
 function handleImportFile(file) {
   if (!file) return;
-  if (!canEdit()) { alert("Nur berechtigte Nutzer können importieren."); return; }
+  if (!canAdmin()) { alert("Importieren ist Administrierenden vorbehalten."); return; }
   const cfg = bcfg();
   const reader = new FileReader();
   reader.onload = async () => {
@@ -691,7 +702,7 @@ async function ensureSicherungspunkt(anlass) {
 }
 
 function openBackupModal() {
-  if (!canEdit()) return;
+  if (!canAdmin()) return;
   if (backupListe().length >= MAX_BACKUPS) {
     alert(
       `Alle ${MAX_BACKUPS} Backup-Plätze sind belegt.\n\n` +
@@ -712,7 +723,7 @@ function closeBackupModal() {
 }
 
 async function confirmBackup() {
-  if (!canEdit() || backupLaeuft) return;
+  if (!canAdmin() || backupLaeuft) return;
   const kommentar = document.getElementById("bk-kommentar").value.trim();
   backupLaeuft = true;
   const btn = document.getElementById("btn-confirm-backup");
@@ -735,7 +746,7 @@ async function confirmBackup() {
 }
 
 async function restoreBackup(id) {
-  if (!canEdit() || backupLaeuft) return;
+  if (!canAdmin() || backupLaeuft) return;
   const eintrag = backupListe().find((b) => b.id === id);
   if (!eintrag) return;
   if (!confirm(
@@ -774,7 +785,7 @@ async function restoreBackup(id) {
 // Datei entfernen. Scheitert der zweite Schritt, bleibt eine ungenutzte Datei
 // zurück — deutlich besser als ein Eintrag ohne Datei dahinter.
 async function deleteBackup(id) {
-  if (!canEdit() || backupLaeuft) return;
+  if (!canAdmin() || backupLaeuft) return;
   const eintrag = backupListe().find((b) => b.id === id);
   if (!eintrag) return;
   if (!confirm(
