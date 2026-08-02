@@ -62,54 +62,65 @@ const DEFAULT_KATEGORIEN = [
 
 const APP_CHANGELOG = [
   {
-    version: "1.1",
-    groups: [
-      {
-        title: "Bedienung am Handy",
-        items: [
-          "Eingabefelder sind am Handy mindestens 16 Pixel groß. Dadurch zoomt der iPhone-Browser beim Antippen eines Feldes nicht mehr ungefragt in die Seite hinein und bleibt danach verschoben stehen."
-        ]
-      }
-    ]
-  },
-  {
     version: "1.0",
     groups: [
       {
-        title: "Platzbelegung & Hallenbelegung",
+        title: "Platz- und Hallenbelegung",
         items: [
-          "Zwei komplett getrennte Bereiche: Platzbelegung (14 Plätze am Hauptplatz sowie in Kalteneber, Rengelrode und Günterode) und Hallenbelegung für die Hallensaison (6 Hallen: Stadionhalle, LK Halle Kurpark, Kath. Gymnasium, Liethenhalle, Th.-Storm-Schule, Solidorhalle/Staatl. Gymnasium) — jeweils eigenes Gitter, eigene Liste und eigener Excel-Import.",
-          "Wochenplan als Gitter (Zeit × Platz bzw. Halle) je Wochentag Montag–Samstag, farblich nach Kategorie.",
-          "Filterbare Terminliste (nach Tag, Standort, Kategorie und Textsuche) — ideal fürs Handy.",
-          "Die Terminliste lässt sich als PDF speichern oder ausdrucken — genau in dem Umfang, den der eingestellte Filter gerade zeigt, nach Wochentagen gegliedert und mit den Farben der Kategorien.",
-          "Standort-Filter trennt den Hauptplatz von den Außenstandorten.",
-          "Auf eine Belegung im Gitter oder in der Liste klicken zeigt alle Details (Ansprechpartner, Notiz) in einer Ansehen-Ansicht — auch für Nutzer ohne Bearbeiten-Recht."
+          "Zwei getrennte Bereiche mit eigenem Gitter, eigener Liste und eigenem Import: die Platzbelegung mit 14 Plätzen (Hauptplatz sowie Kalteneber, Rengelrode und Günterode) und die Hallenbelegung für die Hallensaison mit 6 Hallen (Stadionhalle, LK Halle Kurpark, Kath. Gymnasium, Liethenhalle, Th.-Storm-Schule, Solidorhalle im Staatlichen Gymnasium).",
+          "Wochenplan als Gitter aus Zeit und Platz beziehungsweise Halle, von Montag bis Samstag, farblich nach Kategorie.",
+          "Terminliste mit Filter nach Tag, Standort, Kategorie und freier Textsuche — die praktischere Ansicht auf dem Handy.",
+          "Der Standort-Filter trennt den Hauptplatz von den Außenstandorten.",
+          "Ein Klick auf eine Belegung — im Gitter wie in der Liste — zeigt alle Angaben samt Ansprechpartner und Notiz. Das steht auch Nutzern ohne Bearbeiten-Recht offen."
         ]
       },
       {
-        title: "Bearbeiten (Admin & berechtigte Gruppen)",
+        title: "Belegungen pflegen",
         items: [
-          "Belegungen anlegen, ändern und löschen über ein Formular (Tag, Platz/Halle, Start/Ende, Kürzel, Ansprechpartner, Kategorie, Notiz) — mit Warnung, wenn sich die Zeit mit einer bestehenden Belegung überschneidet.",
-          "Direkt auf ein freies Feld im Gitter tippen legt eine neue Belegung für diesen Platz und diese Zeit an.",
-          "Bestehende Belegungen im Gitter per Drag & Drop auf ein freies Feld verschieben.",
-          "Bearbeiten-Recht wird über die Gruppenverwaltung der Tools-Übersicht vergeben; alle übrigen eingeloggten Nutzer sehen den Plan nur an.",
-          "Datendatei-Import und Backups (samt Einstellungen-Tab) sind der Stufe „Administrieren“ vorbehalten (Häkchen im Sichtbarkeits-Panel der Tools-Übersicht) — Bearbeiter pflegen den Plan, strukturelle Eingriffe macht die Administration."
+          "Anlegen, ändern und löschen über ein Formular mit Tag, Platz oder Halle, Start und Ende, Kürzel, Ansprechpartner, Kategorie und Notiz.",
+          "Überschneidet sich die Zeit mit einer bestehenden Belegung, warnt die App.",
+          "Ein Tippen auf ein freies Feld im Gitter legt direkt eine Belegung für diesen Platz und diese Zeit an.",
+          "Bestehende Belegungen lassen sich im Gitter auf ein freies Feld ziehen."
+        ]
+      },
+      {
+        title: "Wer darf was",
+        items: [
+          "Sehen: Gitter, Liste und alle Angaben einer Belegung, schreibgeschützt.",
+          "Bearbeiten: Belegungen anlegen, ändern, löschen und verschieben. Dazu der Ausdruck der Terminliste.",
+          "Administrieren: zusätzlich Datei-Import und Sicherungen im Reiter „Einstellungen“.",
+          "Der Reiter „Info“ ist für alle sichtbar."
+        ]
+      },
+      {
+        title: "Ausdruck",
+        items: [
+          "Die Terminliste lässt sich ausdrucken oder als PDF sichern — genau in dem Umfang, den der eingestellte Filter gerade zeigt.",
+          "Gegliedert nach Wochentagen, mit den Farben der Kategorien."
+        ]
+      },
+      {
+        title: "Sicherungen",
+        items: [
+          "Im Reiter „Einstellungen“ lassen sich bis zu 10 Sicherungen anlegen. Jede enthält den vollständigen Stand beider Bereiche und kann mit einem Kommentar versehen werden.",
+          "Jeder gesicherte Stand lässt sich per Knopfdruck zurückholen. Die Liste zeigt Zeitpunkt, wer gesichert hat, den Kommentar und die Zahl der enthaltenen Belegungen.",
+          "Vor einem Import und vor dem Zurückholen legt die App von sich aus einen Sicherungspunkt an — das sind die beiden Momente, in denen viel auf einmal überschrieben wird.",
+          "Es wird nie eine Sicherung von selbst gelöscht. Sind alle 10 Plätze belegt, sagt die App das und wartet, bis eine von Hand entfernt wurde."
+        ]
+      },
+      {
+        title: "Bedienung am Handy",
+        items: [
+          "Die Ansicht ist für das Handy gebaut; die gefilterte Terminliste ist dort die bequemere Ansicht als das Gitter.",
+          "Eingabefelder sind mindestens 16 Pixel groß, damit der iPhone-Browser beim Antippen nicht ungefragt in die Seite hineinzoomt und verschoben stehen bleibt.",
+          "Das Verschieben einer Belegung per Ziehen braucht eine Maus; am Handy geht es über das Formular."
         ]
       },
       {
         title: "Daten & Speicherung",
         items: [
-          "Einmaliger Import des bestehenden Excel-Plans (als JSON) je Bereich per Knopfdruck.",
-          "Automatische Nextcloud-Synchronisierung über die zentrale Anmeldung (Tools-Übersicht) — kein separates Passwort nötig; gleichzeitige Änderungen von zwei Geräten werden erkannt und gemeldet."
-        ]
-      },
-      {
-        title: "Backups",
-        items: [
-          "Im Tab „Einstellungen“ lassen sich bis zu 10 Backups anlegen — jedes sichert den vollständigen Stand beider Bereiche (Platzbelegung und Hallenbelegung) und kann mit einem Kommentar versehen werden.",
-          "Jeder gesicherte Stand lässt sich per Knopfdruck wieder herstellen; die Liste zeigt Zeitpunkt, wer gesichert hat, den Kommentar und die Anzahl der enthaltenen Belegungen.",
-          "Vor einem Excel-Import und vor dem Wiederherstellen legt die App automatisch einen Sicherungspunkt an — die beiden Momente, in denen viel auf einmal überschrieben wird.",
-          "Es wird nie ein Backup von selbst gelöscht: sind alle 10 Plätze belegt, meldet die App das und wartet, bis eines von Hand entfernt wurde."
+          "Gespeichert wird in der Vereins-Nextcloud über die zentrale Anmeldung der Tools-Übersicht — ein eigenes Passwort braucht es nicht.",
+          "Ändern zwei Geräte gleichzeitig denselben Stand, erkennt die App das, lädt den fremden Stand nach und sagt Bescheid."
         ]
       }
     ]
