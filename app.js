@@ -996,12 +996,6 @@ function setupListeners() {
   document.querySelectorAll(".bereich-switch button").forEach((b) => b.addEventListener("click", () => switchBereich(b.dataset.bereich)));
   document.querySelectorAll("nav button[data-tab]").forEach((b) => b.addEventListener("click", () => switchTab(b.dataset.tab)));
 
-  const versionBadgeHeader = document.getElementById("version-badge");
-  versionBadgeHeader.addEventListener("click", () => switchTab("info"));
-  versionBadgeHeader.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); switchTab("info"); }
-  });
-
   document.getElementById("day-switch").addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-day]");
     if (!btn) return;
