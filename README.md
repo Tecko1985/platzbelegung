@@ -1,7 +1,7 @@
 # Platzbelegung (v1.0)
 
 Belegungsplan für die Trainingsplätze und Hallen des 1. SC 1911 Heiligenstadt — Teil der
-[Tools-Übersicht](https://tecko1985.github.io/ToolsUebersicht/).
+[Tools-Übersicht](https://sc1911heiligenstadt.github.io/ToolsUebersicht/).
 
 Wer nutzt wann welchen Platz bzw. welche Halle: Wochenplan (Montag–Samstag) als Gitter
 (Zeit × Platz) sowie als filterbare Terminliste. Zwei komplett getrennte Bereiche:
