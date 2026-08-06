@@ -1,56 +1,23 @@
-# Platzbelegung (v1.0)
+# 🏟️ Platzbelegung
 
-Belegungsplan für die Trainingsplätze und Hallen des 1. SC 1911 Heiligenstadt — Teil der
-[Tools-Übersicht](https://sc1911heiligenstadt.github.io/ToolsUebersicht/).
+Belegungsplan für Trainingsplätze und Halle — wer nutzt wann welchen Platz.
 
-Wer nutzt wann welchen Platz bzw. welche Halle: Wochenplan (Montag–Samstag) als Gitter
-(Zeit × Platz) sowie als filterbare Terminliste. Zwei komplett getrennte Bereiche:
+**➡️ [Platzbelegung öffnen](https://sc1911heiligenstadt.github.io/platzbelegung/)**
 
-- **⚽ Platzbelegung** — 14 Plätze am Hauptplatz sowie an den Außenstandorten
-  Kalteneber, Rengelrode und Günterode.
-- **🏀 Hallenbelegung** — 6 Hallen für die Hallensaison (Stadionhalle, LK Halle Kurpark,
-  Kath. Gymnasium, Liethenhalle, Th.-Storm-Schule, Solidorhalle/Staatl. Gymnasium).
+## Zugang
 
-Alle eingeloggten Nutzer können die Pläne einsehen; **Bearbeiten dürfen Administratoren
-und Mitglieder von Gruppen mit Bearbeiten-Recht für Platzbelegung** (vergeben in der
-Tools-Übersicht-Gruppenverwaltung).
+Die Anmeldung läuft über die [Tools-Übersicht](https://sc1911heiligenstadt.github.io/ToolsUebersicht/) — dort einmal anmelden, danach ist dieses Werkzeug offen.
 
-## Bedienung
+Die Rechte gelten in drei Stufen: **Sehen** (nur ansehen), **Bearbeiten** (Einträge pflegen) und **Administrieren** (Einstellungen und Verwaltung). Wer welche Stufe hat, legt die Tools-Übersicht fest.
 
-- **Gitter** — Bereich und Tag auswählen, Belegungen erscheinen farbig nach Kategorie im
-  Zeitraster. Standort-Filter trennt Hauptplatz von den Außenstandorten.
-- **Liste** — alle Termine, filterbar nach Tag, Standort, Kategorie und Textsuche
-  (handyfreundlich).
-- **Ansehen** — auf eine Belegung im Gitter oder in der Liste klicken zeigt alle Details
-  (Ansprechpartner, Notiz) in einer Ansehen-Ansicht, auch ohne Bearbeiten-Recht.
-- **Bearbeiten** — auf eine Belegung tippen zum Ändern/Löschen, auf ein freies Feld tippen
-  legt eine neue an (oder „+ Neue Belegung“, Felder u. a. Kürzel, Ansprechpartner,
-  Kategorie, Notiz). Belegungen lassen sich im Gitter per Drag & Drop verschieben; bei
-  Zeit-Überschneidungen warnt die App.
+## Lokal starten
+
+Über den Eintrag `platzbelegung` in `E:\.claude\launch.json` — der Server läuft dann auf `http://localhost:8778/`.
 
 ## Technik
 
-Vanilla-JS-App (kein Build-Step), Anmeldung & Speicherung laufen über das zentrale
-ToolsUebersicht-Login-Gateway (`admin-worker.js`), das die Daten serverseitig in der
-Vereins-Nextcloud ablegt (`platzbelegung.json`). Kein separates Passwort im Client;
-gleichzeitige Änderungen von zwei Geräten werden erkannt und gemeldet.
+Vanilla JavaScript ohne Build-Schritt — die Dateien werden so ausgeliefert, wie sie im Repo liegen. Veröffentlicht über GitHub Pages. Die Daten liegen in der Vereins-Nextcloud; der Zugriff läuft ausschließlich über den Login-Worker der Tools-Übersicht, nie mit Zugangsdaten im Browser.
 
-- `index.html`, `app.js`, `db.js`, `config.js`, `style.css` — die App
-- `tools/excel-to-seed.ps1` — einmalige Konvertierung des Excel-Platzplans nach
-  `platzbelegung-seed.json`
-- `tools/hallen-excel-to-seed.ps1` — dito für den Hallenplan (`hallenbelegung-seed.json`)
+---
 
-Die erzeugten Seed-Dateien liegen **bewusst nicht im Repo** (`.gitignore`): in
-ihrem `label`-Feld stehen echte Personennamen aus dem Excel-Original, und dieses
-Repo ist öffentlich. Sie werden zur Laufzeit auch von nichts geladen — der Import
-läuft über den Dateiauswähler im Browser, nicht über einen Abruf aus dem Repo.
-
-## Erstbefüllung
-
-1. Als berechtigter Nutzer anmelden, Bereich wählen, Tab **Einstellungen** →
-   „Datendatei auswählen…“ → die jeweilige Seed-JSON wählen.
-2. Danach wird der Plan ausschließlich in der App gepflegt.
-
-Beides ist längst erledigt; die Daten leben in der Nextcloud-Datei der App. Für
-einen Rückweg auf einen früheren Stand sind die **Backups** im Tab
-„Einstellungen" der Weg, nicht ein erneuter Seed-Import.
+Ein Werkzeug des 1. SC 1911 Heiligenstadt. Alle Werkzeuge auf einen Blick: [Tools-Übersicht](https://sc1911heiligenstadt.github.io/ToolsUebersicht/) · Erklärungen im [Toolbox Wiki](https://sc1911heiligenstadt.github.io/Vereinswiki/).
